@@ -5,15 +5,15 @@ const MAX_LEVEL = 10;
 // Levels 2-10 increase steadily without sudden jumps.
 const LEVEL_SPAWN_DELAY_MS = [
   900, // level 1
-  840, // level 2
-  790, // level 3
-  740, // level 4
-  700, // level 5
-  660, // level 6
-  625, // level 7
-  590, // level 8
-  555, // level 9
-  520  // level 10
+  820, // level 2
+  770, // level 3
+  725, // level 4
+  680, // level 5
+  640, // level 6
+  605, // level 7
+  570, // level 8
+  535, // level 9
+  500  // level 10
 ];
 const MISSED_CAN_PENALTY = 1;
 const MISSED_CLICK_PENALTY = 1;
@@ -589,6 +589,8 @@ function spawnWaterCan() {
 function endGame(playerWon = currentScore >= GOAL_SCORE) {
   currentLevel = clampLevel(currentLevel);
   const finishedAllLevels = playerWon && currentLevel >= MAX_LEVEL;
+  const wonMilestoneLevel = playerWon && currentLevel % 5 === 0;
+  const shouldShowWebsitePrompt = !playerWon || wonMilestoneLevel || finishedAllLevels;
   const endMessage = playerWon ? pickRandomMessage(winningMessages) : pickRandomMessage(losingMessages);
 
   gameActive = false;
@@ -618,12 +620,12 @@ function endGame(playerWon = currentScore >= GOAL_SCORE) {
       : `${endMessage} You reached the goal on level ${currentLevel}. Ready for level ${currentLevel + 1}?`)
     : `${endMessage} Final score: ${currentScore}. Best score: ${bestScore}.`;
 
-  if (playerWon) {
-    endOverlayLink.classList.add('is-hidden');
-    endOverlayLink.style.display = 'none';
-  } else {
+  if (shouldShowWebsitePrompt) {
     endOverlayLink.classList.remove('is-hidden');
     endOverlayLink.style.display = 'block';
+  } else {
+    endOverlayLink.classList.add('is-hidden');
+    endOverlayLink.style.display = 'none';
   }
 
   if (!playerWon) {
