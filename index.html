@@ -8,16 +8,49 @@
 </head>
 <body>
   <div class="container">
-    <h1>Water Quest</h1>
-    <p class="game-instructions">Collect 20 items to complete the game!</p>
-    <div class="stats">
-      <p>Cans Collected: <span id="current-cans">0</span></p>
-      <p>Time Left: <span id="timer">30</span>s</p>
+    <div class="game-overlay is-visible" id="start-overlay" aria-live="polite">
+      <div class="overlay-card">
+        <p class="overlay-eyebrow">charity: water challenge</p>
+        <h2>Water Quest</h2>
+        <p>Reach 20 points in 30 seconds. The pace gets faster, combos boost your score, and misses cost you.</p>
+        <p class="keyboard-tip">Keyboard: press Enter to start, then use Enter or Space to collect each can.</p>
+        <button id="overlay-start-button">Start Quest</button>
+      </div>
     </div>
-    <div id="achievements" class="achievement"></div>
-    <div class="game-grid"></div>
-    <button id="start-game">Start Game</button>
+
+    <div class="game-overlay" id="end-overlay" aria-live="polite">
+      <div class="overlay-card">
+        <p class="overlay-eyebrow" id="end-overlay-tag">Round complete</p>
+        <h2 id="end-overlay-title">Quest complete</h2>
+        <p id="end-overlay-message">You can jump back in for another run.</p>
+        <button id="overlay-restart-button">Play Again</button>
+      </div>
+    </div>
+
+    <div class="confetti-layer" id="confetti-layer" aria-hidden="true"></div>
+    <div class="level-transition" id="level-transition" aria-live="polite"></div>
+
+    <div class="brand-header">
+      <img src="img/cw_logo_horizontal.png" alt="charity: water" class="brand-logo">
+      <div>
+        <p class="brand-tag">Water Quest Challenge</p>
+        <h1>Collect 20 cans before time runs out.</h1>
+      </div>
+    </div>
+    <p class="game-instructions">Click each jerry can for +1 point. Missed clicks and missed cans cost points, and the pace speeds up over the 30-second round.</p>
+    <p class="keyboard-tip">Keyboard play is supported: the active can is focused automatically, so press Enter or Space to collect it.</p>
+    <div class="stats">
+      <p class="stat-card" id="level-card">Level: <span id="level-count">1</span></p>
+      <p class="stat-card" id="score-card">Score: <span id="current-cans">0</span></p>
+      <p class="stat-card" id="goal-card">Goal: <span id="goal-score">20</span></p>
+      <p class="stat-card" id="combo-card">Combo: <span id="combo-count">0</span></p>
+      <p class="stat-card" id="best-card">Best Score: <span id="best-score">0</span></p>
+      <p class="stat-card" id="timer-card">Time Left: <span id="timer">30</span>s</p>
+    </div>
+    <div id="achievements" class="achievement" aria-live="polite">Build a streak to earn combo bonus points.</div>
+    <div class="game-grid" aria-label="Water Quest game grid"></div>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
