@@ -5,15 +5,15 @@ const MAX_LEVEL = 10;
 // Levels 2-10 increase steadily without sudden jumps.
 const LEVEL_SPAWN_DELAY_MS = [
   900, // level 1
-  820, // level 2
-  770, // level 3
-  725, // level 4
-  680, // level 5
-  640, // level 6
-  605, // level 7
-  570, // level 8
-  535, // level 9
-  500  // level 10
+  835, // level 2
+  780, // level 3
+  730, // level 4
+  685, // level 5
+  645, // level 6
+  610, // level 7
+  580, // level 8
+  550, // level 9
+  520  // level 10
 ];
 const MISSED_CAN_PENALTY = 1;
 const MISSED_CLICK_PENALTY = 1;
