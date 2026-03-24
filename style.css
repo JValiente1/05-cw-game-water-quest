@@ -41,21 +41,21 @@ body {
   min-height: 100vh;
   padding: clamp(10px, 2.8vw, 30px);
   background:
-    radial-gradient(circle at 14% 18%, rgba(139, 209, 203, 0.33), transparent 30%),
-    radial-gradient(circle at 82% 22%, rgba(46, 157, 247, 0.26), transparent 34%),
-    radial-gradient(circle at 52% 88%, rgba(46, 157, 247, 0.18), transparent 38%),
-    linear-gradient(180deg, #e9f7ff 0%, #d6eef9 48%, #c4e4f1 100%);
+    radial-gradient(circle at 14% 18%, rgba(0, 80, 140, 0.45), transparent 32%),
+    radial-gradient(circle at 82% 22%, rgba(0, 60, 120, 0.38), transparent 36%),
+    radial-gradient(circle at 52% 88%, rgba(0, 100, 160, 0.3), transparent 40%),
+    linear-gradient(180deg, #003a6b 0%, #005290 40%, #006aad 75%, #0082c8 100%);
   color: var(--cw-text);
 }
 
 .container {
-  width: min(100%, 820px);
-  margin: clamp(10px, 4vh, 50px) auto;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 247, 225, 0.98));
-  padding: clamp(16px, 4vw, 40px);
+  width: min(100%, 680px);
+  margin: clamp(10px, 2vh, 28px) auto;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(255, 247, 225, 0.98));
+  padding: clamp(14px, 3vw, 28px);
   border-radius: 28px;
-  border: 3px solid rgba(46, 157, 247, 0.16);
-  box-shadow: var(--shadow-soft);
+  border: 3px solid rgba(0, 100, 180, 0.22);
+  box-shadow: 0 22px 60px rgba(0, 40, 100, 0.28);
   position: relative;
   overflow: hidden;
 }
@@ -344,9 +344,9 @@ h1 {
 .game-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: clamp(10px, 2vw, 16px);
+  gap: clamp(10px, 2vw, 14px);
   margin: 0 auto;
-  width: min(100%, 560px);
+  width: min(100%, 440px);
 }
 
 .grid-cell {
