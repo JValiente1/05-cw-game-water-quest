@@ -225,6 +225,21 @@ body {
   color: var(--cw-blue);
 }
 
+/* ── Page-level logo header ── */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid rgba(0, 100, 180, 0.15);
+}
+
+.page-header-logo {
+  max-height: 56px;
+  width: auto;
+}
+
 /* ── Two-column layout ── */
 .game-layout {
   display: flex;
@@ -269,7 +284,11 @@ body {
 }
 
 .brand-header {
-  margin-bottom: 10px;
+  display: none;
+}
+
+.brand-header-logo {
+  display: none;
 }
 
 h1 {
@@ -284,6 +303,13 @@ h1 {
   font-size: 0.98rem;
   margin-bottom: 16px;
   max-width: 58ch;
+}
+
+.sidebar-instructions {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--cw-navy);
+  margin: 0 0 10px;
 }
 
 /* ── Sidebar stats (vertical stack) ── */
@@ -406,7 +432,7 @@ h1 {
 .water-can {
   width: 72%;
   height: 72%;
-  background-image: url('img/water-can-transparent.png');
+  background-image: url('img/jerry-can.svg');
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
