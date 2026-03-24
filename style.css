@@ -49,7 +49,7 @@ body {
 }
 
 .container {
-  width: min(100%, 680px);
+  width: min(100%, 860px);
   margin: clamp(4px, 1vh, 12px) auto;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(255, 247, 225, 0.98));
   padding: clamp(10px, 2vw, 20px);
@@ -248,7 +248,7 @@ body {
 }
 
 .game-sidebar {
-  flex: 0 0 160px;
+  flex: 0 0 clamp(155px, 22vw, 210px);
   position: sticky;
   top: 16px;
   display: flex;
@@ -306,7 +306,7 @@ h1 {
 }
 
 .sidebar-instructions {
-  font-size: 0.65rem;
+  font-size: clamp(0.76rem, 0.95vw, 0.9rem);
   line-height: 1.5;
   color: var(--cw-navy);
   margin: 0 0 10px;
@@ -455,7 +455,8 @@ h1 {
 }
 
 #overlay-start-button,
-#overlay-restart-button {
+#overlay-restart-button,
+#overlay-resume-button {
   background: var(--cw-yellow);
   color: var(--cw-text);
   border: none;
@@ -470,8 +471,24 @@ h1 {
   box-shadow: 0 10px 24px rgba(255, 201, 7, 0.3);
 }
 
+.end-overlay-link {
+  margin-top: 12px;
+  font-weight: 700;
+  color: var(--cw-navy);
+}
+
+.end-overlay-link a {
+  color: var(--cw-blue);
+  text-decoration: underline;
+}
+
+.is-hidden {
+  display: none;
+}
+
 #overlay-start-button:hover,
-#overlay-restart-button:hover {
+#overlay-restart-button:hover,
+#overlay-resume-button:hover {
   transform: translateY(-1px);
   box-shadow: 0 14px 28px rgba(255, 201, 7, 0.38);
 }
@@ -484,39 +501,66 @@ h1 {
 }
 
 #overlay-start-button:focus-visible,
-#overlay-restart-button:focus-visible {
+#overlay-restart-button:focus-visible,
+#overlay-resume-button:focus-visible {
   outline: 4px solid rgba(46, 157, 247, 0.4);
   outline-offset: 5px;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 900px) {
   .container {
-    border-radius: 18px;
-    padding: 12px;
+    width: min(100%, 760px);
   }
 
-  .page-header-logo {
-    max-height: 50px;
+  .game-sidebar {
+    flex-basis: 180px;
+  }
+
+  .stats p {
+    font-size: 0.82rem;
+  }
+}
+
+@media (max-width: 700px) {
+  body {
+    min-height: 100dvh;
+    padding: 0;
+  }
+
+  .container {
+    width: 100%;
+    height: 100dvh;
+    min-height: 100dvh;
+    margin: 0;
+    padding: 10px;
+    border-width: 2px;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
   }
 
   .page-header {
-    padding-bottom: 8px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
+    padding-bottom: 6px;
   }
 
-  .overlay-card {
-    padding: 20px;
+  .page-header-logo {
+    max-height: 46px;
   }
 
   .game-layout {
     flex-direction: column;
     gap: 8px;
+    flex: 1;
+    min-height: 0;
   }
 
   .game-sidebar {
     position: static;
-    flex: none;
+    top: auto;
     width: 100%;
+    gap: 6px;
+    flex: 0 0 auto;
   }
 
   .sidebar-instructions {
@@ -524,58 +568,57 @@ h1 {
   }
 
   .stats {
-    flex-direction: row;
-    flex-wrap: wrap;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
     gap: 6px;
-    padding: 8px;
+    padding: 6px;
+    -webkit-overflow-scrolling: touch;
   }
 
   .stat-card {
-    flex: 1 1 calc(33% - 6px);
+    flex: 0 0 auto;
+    min-width: 86px;
     text-align: center;
-    padding: 6px 4px;
-    font-size: 0.8rem;
+    padding: 6px 5px;
+    font-size: 0.78rem;
   }
 
   .achievement {
-    font-size: 0.78rem;
-    min-height: 36px;
-    padding: 8px 10px;
+    min-height: 30px;
+    font-size: 0.74rem;
+    padding: 6px 8px;
   }
 
   .game-main {
     width: 100%;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .game-grid {
-    max-width: 100%;
-    width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .container {
-    padding: 10px;
-    border-radius: 14px;
-  }
-
-  .page-header-logo {
-    max-height: 42px;
-  }
-
-  .stat-card {
-    flex: 1 1 calc(33% - 6px);
-    font-size: 0.75rem;
-    padding: 5px 3px;
-    border-radius: 8px;
-  }
-
-  .game-grid {
+    width: min(100%, calc(100dvh - 260px));
+    max-width: 440px;
+    margin: 0 auto;
     gap: 8px;
   }
 
   .grid-cell {
     border-radius: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header-logo {
+    max-height: 40px;
+  }
+
+  .game-grid {
+    width: min(100%, calc(100dvh - 245px));
+    gap: 7px;
   }
 
   .water-can {
@@ -583,195 +626,78 @@ h1 {
     height: 78%;
   }
 
+  .stat-card {
+    min-width: 78px;
+    font-size: 0.72rem;
+    padding: 5px 4px;
+  }
+
   #overlay-start-button,
-  #overlay-restart-button {
+  #overlay-restart-button,
+  #overlay-resume-button {
     width: 100%;
     max-width: 300px;
     margin-top: 16px;
+    padding: 12px 16px;
   }
 }
 
-@media (max-height: 720px) {
+@media (orientation: landscape) and (max-height: 520px) {
   body {
+    padding: 0;
+  }
+
+  .container {
+    height: 100dvh;
     min-height: 100dvh;
+    margin: 0;
+    padding: 6px;
+    border-radius: 0;
   }
 
-  .container {
-    margin: 8px auto;
+  .page-header {
+    margin-bottom: 6px;
+    padding-bottom: 6px;
   }
 
-  .brand-header {
-    margin-bottom: 12px;
+  .page-header-logo {
+    max-height: 34px;
   }
 
-  .game-instructions {
-    margin-bottom: 18px;
-  }
-
-  .stats {
-    margin-bottom: 18px;
-  }
-}
-
-@media (max-width: 780px) and (orientation: landscape) and (max-height: 500px) {
-  body {
-    padding: 8px;
-  }
-
-  .container {
-    margin: 4px auto;
-    padding: 12px;
-    border-radius: 18px;
-  }
-
-  .brand-header {
-    gap: 10px;
-    margin-bottom: 8px;
-  }
-
-  .brand-logo {
-    width: clamp(120px, 20vw, 170px);
-  }
-
-  .brand-tag {
-    margin-bottom: 4px;
-    font-size: 0.74rem;
-    letter-spacing: 0.12em;
-  }
-
-  h1 {
-    font-size: clamp(1.18rem, 2.6vw, 1.6rem);
-    line-height: 1.14;
-  }
-
-  .game-instructions,
-  .keyboard-tip {
-    margin-bottom: 10px;
-    font-size: 0.86rem;
-  }
-
-  .stats {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .game-layout {
     gap: 8px;
-    padding: 8px;
-    margin-bottom: 10px;
+    flex-direction: row;
+  }
+
+  .game-sidebar {
+    width: clamp(150px, 26vw, 220px);
+    flex: 0 0 auto;
+  }
+
+  .stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 6px;
+    overflow: hidden;
   }
 
   .stat-card {
-    padding: 8px;
-    border-radius: 10px;
-    text-align: center;
-    font-size: 0.82rem;
+    min-width: 0;
+    flex: 1 1 calc(50% - 5px);
+    font-size: 0.72rem;
+    padding: 5px 4px;
   }
 
   .achievement {
-    min-height: 44px;
-    margin-bottom: 10px;
-    padding: 9px 10px;
-    font-size: 0.86rem;
-  }
-
-  .game-grid {
-    width: min(100%, 420px);
-    gap: 8px;
-  }
-
-  .grid-cell {
-    border-radius: 12px;
-  }
-
-  .overlay-card {
-    width: min(100%, 480px);
-    padding: 14px;
-    border-radius: 14px;
-  }
-
-  .overlay-card h2 {
-    margin-bottom: 8px;
-    font-size: clamp(1.2rem, 3vw, 1.7rem);
-  }
-
-  #overlay-start-button,
-  #overlay-restart-button {
-    margin-top: 12px;
-    padding: 10px 16px;
-  }
-}
-
-@media (max-width: 700px) and (orientation: landscape) and (max-height: 420px) {
-  body {
-    padding: 6px;
-  }
-
-  .container {
-    margin: 2px auto;
-    padding: 10px;
-    border-radius: 14px;
-  }
-
-  .brand-header {
-    flex-direction: row;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 6px;
-  }
-
-  .brand-logo {
-    width: clamp(88px, 15vw, 120px);
-  }
-
-  .brand-tag {
-    display: none;
-  }
-
-  h1 {
-    font-size: clamp(1rem, 2vw, 1.2rem);
-    line-height: 1.08;
-  }
-
-  .game-instructions {
-    margin-bottom: 6px;
-    font-size: 0.78rem;
-    max-width: none;
-  }
-
-  .container > .keyboard-tip {
-    display: none;
-  }
-
-  .stats {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 6px;
-    margin-bottom: 8px;
-    padding: 6px;
-  }
-
-  #goal-card,
-  #combo-card,
-  #best-card {
-    display: none;
-  }
-
-  .stats p,
-  .stat-card {
+    min-height: 32px;
+    padding: 6px 8px;
     font-size: 0.72rem;
   }
 
-  .stat-card {
-    padding: 6px 4px;
-    border-radius: 8px;
-  }
-
-  .achievement {
-    min-height: 34px;
-    margin-bottom: 8px;
-    padding: 6px 8px;
-    font-size: 0.74rem;
-    border-radius: 12px;
-  }
-
   .game-grid {
-    width: min(100%, 300px);
+    width: min(100%, calc(100dvh - 120px));
+    max-width: 520px;
     gap: 6px;
   }
 

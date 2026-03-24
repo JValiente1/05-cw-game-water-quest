@@ -1,19 +1,19 @@
 const GOAL_SCORE = 20;
 const GAME_DURATION = 30;
 const MAX_LEVEL = 10;
-// Per-level speed table: [startDelay, minDelay] in ms.
-// Each level is clearly faster than the previous one.
-const LEVEL_SPEED_TABLE = [
-  [960, 620],  // level 1  — relaxed intro
-  [800, 530],  // level 2  — first noticeable step up
-  [660, 440],  // level 3
-  [540, 360],  // level 4
-  [440, 290],  // level 5  — halfway, getting tough
-  [360, 230],  // level 6
-  [290, 185],  // level 7
-  [235, 148],  // level 8  — intense
-  [188, 118],  // level 9
-  [150,  95],  // level 10 — max speed
+// Per-level spawn delays in ms.
+// Levels 2-10 increase steadily without sudden jumps.
+const LEVEL_SPAWN_DELAY_MS = [
+  900, // level 1
+  840, // level 2
+  790, // level 3
+  740, // level 4
+  700, // level 5
+  660, // level 6
+  625, // level 7
+  590, // level 8
+  555, // level 9
+  520  // level 10
 ];
 const MISSED_CAN_PENALTY = 1;
 const MISSED_CLICK_PENALTY = 1;
@@ -46,6 +46,11 @@ let audioContext;
 let scoreFlashTimeout;
 let timerFlashTimeout;
 let nextLevelReady = false;
+let gamePaused = false;
+let pausedTimeLeft = 0;
+let lostOnLevel = 1;
+let missClickGraceUntil = 0;
+let spawnSequence = 0;
 let confettiLoopInterval;
 let levelTransitionTimeout;
 
@@ -68,8 +73,11 @@ const endOverlay = document.getElementById('end-overlay');
 const endOverlayTag = document.getElementById('end-overlay-tag');
 const endOverlayTitle = document.getElementById('end-overlay-title');
 const endOverlayMessage = document.getElementById('end-overlay-message');
+const endOverlayLink = document.getElementById('end-overlay-link');
 const overlayStartButton = document.getElementById('overlay-start-button');
 const overlayRestartButton = document.getElementById('overlay-restart-button');
+const pauseOverlay = document.getElementById('pause-overlay');
+const overlayResumeButton = document.getElementById('overlay-resume-button');
 
 goalDisplay.textContent = GOAL_SCORE;
 bestScoreDisplay.textContent = bestScore;
@@ -368,9 +376,10 @@ function flashScreen(flashType) {
   return flashType;
 }
 
-function updateOverlayState(showStart, showEnd) {
+function updateOverlayState(showStart, showEnd, showPause = false) {
   startOverlay.classList.toggle('is-visible', showStart);
   endOverlay.classList.toggle('is-visible', showEnd);
+  pauseOverlay.classList.toggle('is-visible', showPause);
 
   if (showStart) {
     window.requestAnimationFrame(() => {
@@ -382,6 +391,41 @@ function updateOverlayState(showStart, showEnd) {
     window.requestAnimationFrame(() => {
       overlayRestartButton.focus();
     });
+  }
+
+  if (showPause) {
+    window.requestAnimationFrame(() => {
+      overlayResumeButton.focus();
+    });
+  }
+}
+
+function pauseGame() {
+  if (!gameActive || gamePaused) {
+    return;
+  }
+
+  gamePaused = true;
+  pausedTimeLeft = timeLeft;
+  clearTimeout(spawnTimeout);
+  clearInterval(timerInterval);
+  updateOverlayState(false, false, true);
+}
+
+function resumeGame() {
+  if (!gamePaused) {
+    return;
+  }
+
+  gamePaused = false;
+  timeLeft = pausedTimeLeft;
+  updateOverlayState(false, false, false);
+  startTimer();
+
+  if (activeCanButton && !activeCanCollected) {
+    focusActiveCan();
+  } else {
+    scheduleNextSpawn();
   }
 }
 
@@ -446,13 +490,7 @@ function registerPenalty(points, message) {
 
 function getCurrentSpawnDelay() {
   const clampedLevel = clampLevel(currentLevel);
-  const [startDelay, minDelay] = LEVEL_SPEED_TABLE[clampedLevel - 1];
-  const elapsedSeconds = GAME_DURATION - timeLeft;
-  const difficultyProgress = elapsedSeconds / GAME_DURATION;
-  const easedProgress = difficultyProgress * difficultyProgress;
-  const delayRange = startDelay - minDelay;
-
-  return Math.max(minDelay, Math.round(startDelay - (delayRange * easedProgress)));
+  return LEVEL_SPAWN_DELAY_MS[clampedLevel - 1];
 }
 
 function collectActiveCan() {
@@ -482,7 +520,15 @@ function scheduleNextSpawn() {
     return;
   }
 
+  // Ensure only one spawn timer is active at any time.
+  clearTimeout(spawnTimeout);
+  const sequence = ++spawnSequence;
+
   spawnTimeout = window.setTimeout(() => {
+    if (sequence !== spawnSequence) {
+      return;
+    }
+
     spawnWaterCan();
   }, getCurrentSpawnDelay());
 }
@@ -492,6 +538,9 @@ function registerMissedCan() {
     return;
   }
 
+  // Mark this can as closed out before clearing, so stale events do not count.
+  activeCanCollected = true;
+  missClickGraceUntil = Date.now() + 180;
   registerPenalty(MISSED_CAN_PENALTY, 'Missed can. Your streak is gone and your score drops.');
 }
 
@@ -499,6 +548,9 @@ function spawnWaterCan() {
   if (!gameActive) {
     return;
   }
+
+  // This callback is now active; cancel any stale timer handle.
+  clearTimeout(spawnTimeout);
 
   const cells = document.querySelectorAll('.grid-cell');
   registerMissedCan();
@@ -565,9 +617,22 @@ function endGame(playerWon = currentScore >= GOAL_SCORE) {
       ? `${endMessage} Amazing run. You cleared all 10 levels. Final score: ${currentScore}. Best score: ${bestScore}.`
       : `${endMessage} You reached the goal on level ${currentLevel}. Ready for level ${currentLevel + 1}?`)
     : `${endMessage} Final score: ${currentScore}. Best score: ${bestScore}.`;
+
+  if (playerWon) {
+    endOverlayLink.classList.add('is-hidden');
+    endOverlayLink.style.display = 'none';
+  } else {
+    endOverlayLink.classList.remove('is-hidden');
+    endOverlayLink.style.display = 'block';
+  }
+
+  if (!playerWon) {
+    lostOnLevel = currentLevel;
+  }
+
   overlayRestartButton.textContent = playerWon
     ? (finishedAllLevels ? 'Play Again From Level 1' : `Start Level ${currentLevel + 1}`)
-    : 'Play Again';
+    : 'Skip and Play Again';
   updateOverlayState(false, true);
 
   if (playerWon) {
@@ -600,6 +665,7 @@ function startGame() {
 
   ensureAudioContext();
   clearTimeout(spawnTimeout);
+  spawnSequence += 1;
   clearTimeout(levelTransitionTimeout);
   clearInterval(timerInterval);
   clearTimeout(feedbackTimeout);
@@ -611,7 +677,8 @@ function startGame() {
   if (nextLevelReady) {
     currentLevel = clampLevel(currentLevel + 1);
   } else if (endOverlay.classList.contains('is-visible')) {
-    currentLevel = 1;
+    // restart from the level the player lost on (or level 1 for a fresh start)
+    currentLevel = lostOnLevel;
   }
 
   currentLevel = clampLevel(currentLevel);
@@ -653,6 +720,10 @@ grid.addEventListener('click', event => {
     return;
   }
 
+  if (Date.now() < missClickGraceUntil) {
+    return;
+  }
+
   if (clickedCell === activeCanCell && collectActiveCan()) {
     return;
   }
@@ -670,3 +741,15 @@ overlayStartButton.focus();
 
 overlayStartButton.addEventListener('click', startGame);
 overlayRestartButton.addEventListener('click', startGame);
+overlayResumeButton.addEventListener('click', resumeGame);
+
+// Pause when the player leaves the tab or the window loses focus
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    pauseGame();
+  }
+});
+
+window.addEventListener('blur', () => {
+  pauseGame();
+});
