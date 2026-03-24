@@ -236,7 +236,7 @@ body {
 }
 
 .page-header-logo {
-  max-height: 56px;
+  max-height: 90px;
   width: auto;
 }
 
@@ -306,7 +306,7 @@ h1 {
 }
 
 .sidebar-instructions {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   line-height: 1.5;
   color: var(--cw-navy);
   margin: 0 0 10px;
