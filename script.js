@@ -1,16 +1,20 @@
 const GOAL_SCORE = 20;
 const GAME_DURATION = 30;
 const MAX_LEVEL = 10;
-const START_SPAWN_DELAY = 1040;
-const MIN_SPAWN_DELAY = 620;
-const LEVEL_START_REDUCTION = 120;
-const LEVEL_MIN_REDUCTION = 68;
-const ABSOLUTE_START_FLOOR = 500;
-const ABSOLUTE_MIN_FLOOR = 260;
-const LEVEL_SPEED_BOOST_PER_LEVEL = 0.08;
-const MIN_LEVEL_SPEED_MULTIPLIER = 0.42;
-const EARLY_LEVEL_BONUS_STEP = 0.03;
-const MIN_EARLY_LEVEL_MULTIPLIER = 0.88;
+// Per-level speed table: [startDelay, minDelay] in ms.
+// Each level is clearly faster than the previous one.
+const LEVEL_SPEED_TABLE = [
+  [960, 620],  // level 1  — relaxed intro
+  [800, 530],  // level 2  — first noticeable step up
+  [660, 440],  // level 3
+  [540, 360],  // level 4
+  [440, 290],  // level 5  — halfway, getting tough
+  [360, 230],  // level 6
+  [290, 185],  // level 7
+  [235, 148],  // level 8  — intense
+  [188, 118],  // level 9
+  [150,  95],  // level 10 — max speed
+];
 const MISSED_CAN_PENALTY = 1;
 const MISSED_CLICK_PENALTY = 1;
 const BEST_SCORE_KEY = 'water-quest-best-score';
@@ -405,15 +409,6 @@ function clampLevel(level) {
   return Math.max(1, Math.min(MAX_LEVEL, level));
 }
 
-function getLateGameSpeedBoost(level) {
-  if (level < 8) {
-    return 1;
-  }
-
-  const extraLevelSteps = level - 7;
-
-  return Math.max(0.65, 1 - (extraLevelSteps * 0.1));
-}
 
 function registerSuccessfulHit() {
   comboStreak += 1;
@@ -451,32 +446,13 @@ function registerPenalty(points, message) {
 
 function getCurrentSpawnDelay() {
   const clampedLevel = clampLevel(currentLevel);
-  const levelSteps = Math.max(0, clampedLevel - 1);
-  const earlyLevelSteps = Math.min(levelSteps, 4);
-  const levelSpeedScale = levelSteps;
-  const lateGameBoost = getLateGameSpeedBoost(clampedLevel);
-  const earlyLevelBoost = Math.max(
-    MIN_EARLY_LEVEL_MULTIPLIER,
-    1 - (earlyLevelSteps * EARLY_LEVEL_BONUS_STEP)
-  );
-  const levelSpeedMultiplier = Math.max(
-    MIN_LEVEL_SPEED_MULTIPLIER,
-    (1 - (levelSteps * LEVEL_SPEED_BOOST_PER_LEVEL)) * earlyLevelBoost * lateGameBoost
-  );
-  const levelStartDelay = Math.max(
-    ABSOLUTE_START_FLOOR,
-    Math.round((START_SPAWN_DELAY - (levelSpeedScale * LEVEL_START_REDUCTION)) * levelSpeedMultiplier)
-  );
-  const levelMinDelay = Math.max(
-    ABSOLUTE_MIN_FLOOR,
-    Math.round((MIN_SPAWN_DELAY - (levelSpeedScale * LEVEL_MIN_REDUCTION)) * levelSpeedMultiplier)
-  );
+  const [startDelay, minDelay] = LEVEL_SPEED_TABLE[clampedLevel - 1];
   const elapsedSeconds = GAME_DURATION - timeLeft;
   const difficultyProgress = elapsedSeconds / GAME_DURATION;
-  const delayRange = levelStartDelay - levelMinDelay;
   const easedProgress = difficultyProgress * difficultyProgress;
+  const delayRange = startDelay - minDelay;
 
-  return Math.max(levelMinDelay, Math.round(levelStartDelay - (delayRange * easedProgress)));
+  return Math.max(minDelay, Math.round(startDelay - (delayRange * easedProgress)));
 }
 
 function collectActiveCan() {

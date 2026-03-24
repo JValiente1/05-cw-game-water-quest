@@ -30,25 +30,33 @@
     <div class="confetti-layer" id="confetti-layer" aria-hidden="true"></div>
     <div class="level-transition" id="level-transition" aria-live="polite"></div>
 
-    <div class="brand-header">
-      <img src="img/cw_logo_horizontal.png" alt="charity: water" class="brand-logo">
-      <div>
-        <p class="brand-tag">Water Quest Challenge</p>
-        <h1>Collect 20 cans before time runs out.</h1>
+    <div class="game-layout">
+      <aside class="game-sidebar">
+        <div class="sidebar-brand">
+          <img src="img/cw_logo_horizontal.png" alt="charity: water" class="brand-logo">
+          <p class="brand-tag">Water Quest Challenge</p>
+        </div>
+        <div class="stats">
+          <p class="stat-card" id="level-card">Level: <span id="level-count">1</span></p>
+          <p class="stat-card" id="score-card">Score: <span id="current-cans">0</span></p>
+          <p class="stat-card" id="goal-card">Goal: <span id="goal-score">20</span></p>
+          <p class="stat-card" id="combo-card">Combo: <span id="combo-count">0</span></p>
+          <p class="stat-card" id="best-card">Best: <span id="best-score">0</span></p>
+          <p class="stat-card" id="timer-card">Time: <span id="timer">30</span>s</p>
+        </div>
+        <div id="achievements" class="achievement" aria-live="polite">Build a streak to earn combo bonus points.</div>
+      </aside>
+      <div class="game-main">
+        <div class="brand-header">
+          <div>
+            <h1>Collect 20 cans before time runs out.</h1>
+          </div>
+        </div>
+        <p class="game-instructions">Click each jerry can for +1 point. Missed clicks and missed cans cost points, and the pace speeds up over the 30-second round.</p>
+        <p class="keyboard-tip">Keyboard play is supported: the active can is focused automatically, so press Enter or Space to collect it.</p>
+        <div class="game-grid" aria-label="Water Quest game grid"></div>
       </div>
     </div>
-    <p class="game-instructions">Click each jerry can for +1 point. Missed clicks and missed cans cost points, and the pace speeds up over the 30-second round.</p>
-    <p class="keyboard-tip">Keyboard play is supported: the active can is focused automatically, so press Enter or Space to collect it.</p>
-    <div class="stats">
-      <p class="stat-card" id="level-card">Level: <span id="level-count">1</span></p>
-      <p class="stat-card" id="score-card">Score: <span id="current-cans">0</span></p>
-      <p class="stat-card" id="goal-card">Goal: <span id="goal-score">20</span></p>
-      <p class="stat-card" id="combo-card">Combo: <span id="combo-count">0</span></p>
-      <p class="stat-card" id="best-card">Best Score: <span id="best-score">0</span></p>
-      <p class="stat-card" id="timer-card">Time Left: <span id="timer">30</span>s</p>
-    </div>
-    <div id="achievements" class="achievement" aria-live="polite">Build a streak to earn combo bonus points.</div>
-    <div class="game-grid" aria-label="Water Quest game grid"></div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <script src="script.js"></script>
