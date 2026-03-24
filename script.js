@@ -542,6 +542,7 @@ function spawnWaterCan() {
 
   function handleCanInteraction(event) {
     event.stopPropagation();
+    event.preventDefault();
 
     if (!gameActive) {
       return;
@@ -551,7 +552,6 @@ function spawnWaterCan() {
   }
 
   canButton.addEventListener('pointerdown', handleCanInteraction);
-  canButton.addEventListener('click', handleCanInteraction);
 
   randomCell.appendChild(canButton);
   focusActiveCan();
@@ -678,6 +678,10 @@ grid.addEventListener('click', event => {
   }
 
   if (clickedCell === activeCanCell && collectActiveCan()) {
+    return;
+  }
+
+  if (!activeCanButton || activeCanCollected) {
     return;
   }
 
