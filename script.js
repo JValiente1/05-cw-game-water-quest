@@ -695,7 +695,8 @@ function startGame() {
   createGrid();
   updateStats();
   updateTimerState();
-  showMessage(`Level ${currentLevel} is live. Keep your streak going to stack combo points.`, 'highlight');
+  const cadenceMs = getCurrentSpawnDelay();
+  showMessage(`Level ${currentLevel} is live. Pace: ~${Math.round(1000 / cadenceMs)} cans/sec. Keep your streak going.`, 'highlight');
   updateOverlayState(false, false);
 
   if (startingNextLevel) {
@@ -754,4 +755,19 @@ document.addEventListener('visibilitychange', () => {
 
 window.addEventListener('blur', () => {
   pauseGame();
+});
+
+window.addEventListener('keydown', event => {
+  if (event.key !== 'Escape') {
+    return;
+  }
+
+  if (gameActive && !gamePaused) {
+    pauseGame();
+    return;
+  }
+
+  if (gamePaused) {
+    resumeGame();
+  }
 });
